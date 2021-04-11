@@ -2,6 +2,9 @@ import { Button, Mrkdwn, Option, PlainText, Section, StaticSelect, Input, Divide
 import { App, ButtonAction, KnownBlock, SlackAction, SlackActionMiddlewareArgs } from "@slack/bolt";
 import { World } from "./world";
 
+import initializeCharacterCreation from "./character-creation";
+import initializeInterpreter from "./interpreter";
+
 const app = new App({
   token: process.env.SLACK_BOT_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
@@ -11,32 +14,8 @@ const app = new App({
 
 const world = new World();
 
-app.action("create_character", async (props) => {
-  console.log("create_character", props.body);
-
-  try {
-    if ("trigger_id" in props.body) {
-      const result = await props.client.views.open({
-        trigger_id: props.body.trigger_id,
-        view: {
-          type: "modal",
-          callback_id: "create_character_callback",
-          title: PlainText("Create a Character"),
-          blocks: [
-            Input("Race", StaticSelect(undefined, "Choose Race", [Option("Human", "human"), Option("Elf", "elf")])),
-          ],
-          close: PlainText("Cancel"),
-          submit: PlainText("Create"),
-        },
-      });
-      console.log(result);
-    }
-  } catch (e) {
-    console.error(e);
-  }
-
-  await props.ack();
-});
+initializeCharacterCreation(app);
+initializeInterpreter(app);
 
 app.event("app_home_opened", async (props) => {
   console.log(props.event);
