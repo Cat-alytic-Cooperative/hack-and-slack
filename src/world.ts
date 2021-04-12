@@ -24,3 +24,5 @@ export class World {
   rooms = new Map<RoomId, Room>();
   exits = new Map<ExitId, Exit>();
 }
+
+export const world = new World();
