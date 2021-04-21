@@ -44,7 +44,6 @@ export default function initializeCharacterCreation(app: App) {
           action.view?.state.values.ability_scores.choose_secondary_action?.selected_option?.value || undefined;
 
         primaryAbilities = primaryAbilities.filter((entry) => !action || entry !== selectedSecondary);
-
         secondaryAbilities = secondaryAbilities.filter((entry) => !action || entry !== selectedPrimary);
       }
 

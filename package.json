@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "start": "nodemon"
+    "start": "nodemon",
+    "worker": "ts-node src/worker.ts"
   },
   "author": "",
   "license": "ISC",
@@ -14,11 +15,13 @@
     "@slack-wrench/blocks": "^3.1.1",
     "@slack/bolt": "^3.3.0",
     "@types/node": "^14.14.37",
+    "bull": "^3.22.1",
     "nodemon": "^2.0.7",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4"
   },
   "devDependencies": {
+    "@types/bull": "^3.15.0",
     "prettier": "^2.2.1"
   },
   "prettier": {
