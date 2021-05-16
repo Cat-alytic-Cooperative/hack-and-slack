@@ -1,14 +1,5 @@
-import {
-  PlainText,
-  Input,
-  StaticSelect,
-  Option,
-  Actions,
-  Context,
-  Mrkdwn,
-  Divider,
-  ActionsBlock,
-} from "@slack-wrench/blocks";
+import { PlainText, Input, StaticSelect, Option, Actions, Context, Mrkdwn, Divider } from "@slack-wrench/blocks";
+import { ActionsBlock } from "./blocks/actions-block";
 import * as S from "@slack/types";
 import { App, Block, KnownBlock, SlackAction } from "@slack/bolt";
 
