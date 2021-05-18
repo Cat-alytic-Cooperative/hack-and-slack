@@ -11,6 +11,8 @@ function optionFromValue(value: string | undefined) {
 }
 
 export default function initializeCharacterCreation(app: App) {
+  console.log("Initializing character creation");
+
   function generateCreationModal(action?: SlackAction) {
     try {
       const Abilities = ["Strength", "Dexterity", "Constitution", "Intelligence", "Wisdom", "Charisma"];

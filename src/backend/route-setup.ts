@@ -11,14 +11,12 @@ function findRouteFiles(path: string, route: string) {
   entries.forEach((entry) => {
     const joinedPath = join(path, entry);
     let routeEntry = basename(entry, extname(entry));
-    console.log(routeEntry);
     const parameterMatch = routeEntry.match(/^\[(.+)]$/);
     if (parameterMatch) {
       console.log("Parameter:", routeEntry);
       routeEntry = `:${parameterMatch[1]}`;
     }
     const joinedRoute = `${route}/${routeEntry}`; //join(route, routeEntry);
-    console.log("joinedRoute", route, routeEntry, joinedRoute)
     if (statSync(joinedPath).isDirectory()) {
       fileEntries.push(...findRouteFiles(joinedPath, joinedRoute));
     } else {
@@ -33,7 +31,6 @@ export const EXPRESS_METHODS = ["get", "put", "post", "delete", "head", "options
 
 export function initializeRouter(router: Router) {
   const routes = findRouteFiles(join(__dirname, "routes"), "");
-  console.log(routes);
 
   const importPromises: Promise<any>[] = [];
   routes.forEach((entry) => {

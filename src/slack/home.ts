@@ -1,9 +1,11 @@
 import { Section, Mrkdwn, Button } from "@slack-wrench/blocks";
 import { App, Block, KnownBlock } from "@slack/bolt";
-import { world } from "./world";
+import { world } from "./backend/world";
 import { Actions } from "./blocks/actions-block";
 
 export default function initializeHomeTab(app: App) {
+  console.log("Initializing app home");
+
   app.event("app_home_opened", async (props) => {
     console.log(props.event);
 

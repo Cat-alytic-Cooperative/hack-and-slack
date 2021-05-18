@@ -25,4 +25,3 @@ export class World {
   exits = new Map<ExitId, Exit>();
 }
 
-export const world = new World();
