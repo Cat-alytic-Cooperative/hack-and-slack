@@ -40,8 +40,8 @@ export interface BaseQueryObject<T extends QueryResultRow> {
   deleteByExample(object: Partial<T>): Promise<QueryResult<T>>;
 }
 
-export function queryObjectBuilder<T extends QueryResultRow>(table: string): BaseQueryObject<T> {
-  return {
+export function queryObjectBuilder<T extends QueryResultRow, R = BaseQueryObject<T>>(table: string, overrideObject?: R) {
+  return Object.assign({
     async getAll() {
       return performQuery(`SELECT * FROM ${table}`);
     },
@@ -91,5 +91,5 @@ export function queryObjectBuilder<T extends QueryResultRow>(table: string): Bas
       const sql = `DELETE FROM ${table} WHERE ${args}`;
       return performQuery(sql, parameters);
     },
-  };
+  }) as R;
 }

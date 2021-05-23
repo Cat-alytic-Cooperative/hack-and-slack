@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "start": "nodemon",
-    "worker": "ts-node src/worker.ts"
+    "start:backend": "nodemon --config ./nodemon-backend.json",
+    "start:slack": "nodemon --config ./nodemon-slack.json"
   },
   "author": "",
   "license": "ISC",
@@ -16,7 +16,9 @@
     "@slack/bolt": "^3.3.0",
     "@types/node": "^14.14.37",
     "@types/pg": "^7.14.11",
+    "axios": "^0.21.1",
     "bull": "^3.22.1",
+    "bullmq": "^1.26.4",
     "nodemon": "^2.0.7",
     "pg": "^8.6.0",
     "ts-node": "^9.1.1",

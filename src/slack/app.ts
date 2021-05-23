@@ -7,7 +7,7 @@ import initializeCharacterCreation from "./character-creation";
 import initializeHomeTab from "./home";
 import initializeInterpreter from "./interpreter";
 
-const REDIS_URL = process.env.REDIS_URL || "redis://127.0.0.1:6379";
+const REDIS_URL = String(process.env.REDIS_URL);
 // Initialize your custom receiver
 const expressReceiver = new ExpressReceiver({
   signingSecret: String(process.env.SLACK_SIGNING_SECRET),
@@ -16,20 +16,18 @@ const expressReceiver = new ExpressReceiver({
 const appSettings = {
   token: process.env.SLACK_BOT_TOKEN,
   signingSecret: process.env.SLACK_SIGNING_SECRET,
-//  receiver: expressReceiver,
+  //  receiver: expressReceiver,
   socketMode: true,
   appToken: process.env.APP_TOKEN,
 };
 
-console.log(appSettings)
+console.log(appSettings);
 
 const app = new App(appSettings);
 
 initializeCharacterCreation(app);
 initializeInterpreter(app);
 initializeHomeTab(app);
-
-import { initializeRouter } from "../backend/route-setup";
 
 const workQueue = new Queue("work", REDIS_URL);
 workQueue.on("global:completed", (jobId, result) => {
@@ -38,7 +36,6 @@ workQueue.on("global:completed", (jobId, result) => {
 
 (async () => {
   try {
-    await initializeRouter(expressReceiver.router);
     //  await expressReceiver.start(Number(process.env.PORT) || 3000);
     const port = Number(process.env.PORT) || 5000;
     const server = await app.start(port);

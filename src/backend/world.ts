@@ -1,23 +1,6 @@
-export type PlayerId = string & { __flavor?: "player" };
-export class Player {
-  id: PlayerId = "";
-  name = "";
-  description = "";
-}
-
-export type RoomId = string & { __flavor?: "room" };
-export class Room {
-  id: RoomId = "";
-  name = "";
-  description = "";
-}
-
-export type ExitId = string & { __flavor?: "exit" };
-export class Exit {
-  id: ExitId = "";
-  name = "";
-  description = "";
-}
+import { ExitId, Exit } from "../shared/models/exit";
+import { Player, PlayerId } from "../shared/models/player";
+import { RoomId, Room } from "../shared/models/room";
 
 export class World {
   players = new Map<PlayerId, Player>();
