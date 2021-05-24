@@ -1,9 +1,9 @@
-import { UserId } from "./user";
+import { AccountId } from "./account";
 
 export type PlayerId = number & { __flavor?: "player" };
 export class Player {
   id: PlayerId = 0;
-  user?: UserId;
+  account?: AccountId;
   name = "";
   description = "";
 }

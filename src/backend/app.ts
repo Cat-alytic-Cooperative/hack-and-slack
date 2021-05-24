@@ -13,6 +13,10 @@ const workProcessor: ProcessCallbackFunction<any> = async (job) => {
   if (!data.type) {
     return { type: "error", message: "Invalid request type" };
   }
+  switch (data.type) {
+    case "command":
+      break;
+  }
   return { value: "hello" };
 };
 

@@ -4,7 +4,7 @@ import { Actions } from "./blocks/actions-block";
 
 import { Queue, Worker } from "bullmq";
 
-import { getUserBySlackId } from "../shared/api/user";
+import { getAccountBySlackId } from "../shared/api/account";
 
 export default function initializeHomeTab(app: App) {
   console.log("Initializing app home");
@@ -12,7 +12,7 @@ export default function initializeHomeTab(app: App) {
   app.event("app_home_opened", async (props) => {
     console.log(props.event);
 
-    const user = await getUserBySlackId(props.event.user);
+    const account = await getAccountBySlackId(props.event.user);
 
     let blocks: (Block | KnownBlock)[] = [];
     //    if (world.players.get(props.event.user)) {

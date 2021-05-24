@@ -1,1 +1,1 @@
-import { UserId } from "../../shared/models/user";
+import { AccountId } from "../../shared/models/account";
