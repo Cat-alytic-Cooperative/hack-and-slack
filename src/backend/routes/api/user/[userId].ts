@@ -1,7 +1,7 @@
-import { RequestHandler } from "express";
-
 import { Users } from "../../../database/user";
+import { tryRequestHandler } from "../../../route-setup";
 
-export const get: RequestHandler = (req, res) => {
-  res.json(Users.getBySlackId(req.params.userId));
-};
+export const get = tryRequestHandler(async (req, res, next) => {
+  const results = await Users.getBySlackId(req.params.userId);
+  res.json(results.rows);
+});

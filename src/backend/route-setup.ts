@@ -1,6 +1,6 @@
 import { readdirSync, statSync } from "fs";
 import { join, basename, extname } from "path";
-import { Router, RequestHandler } from "express";
+import { Router, RequestHandler, Request, Response, NextFunction } from "express";
 
 type DirectoryEntries = [string, string][];
 
@@ -55,4 +55,18 @@ export function initializeRouter(router: Router) {
     importPromises.push(promise);
   });
   return Promise.all(importPromises);
+}
+
+export function tryRequestHandler(handler: RequestHandler) {
+  return function (req: Request, res: Response, next: NextFunction) {
+    try {
+      const result: any = handler(req, res, next);
+      if (result instanceof Promise) {
+        result.catch((error) => next(error));
+        return;
+      }
+    } catch (e) {
+      next(e);
+    }
+  };
 }

@@ -8,22 +8,29 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false },
 });
 
+/*
 pool.on("error", (err, client) => {
   console.error(err);
 });
-
+*/
 export function getDatabase() {
   return pool.connect();
 }
 
 export async function performQuery(sql: string, parameters?: any[]) {
+  try {
   //  const client = await getDatabase();
-  //  console.log("<=", sql);
-  //  console.log("<=", parameters);
+    console.log("<=", sql);
+    console.log("<=", parameters);
   const queryResult = await pool.query(sql, parameters);
+  console.log(3);
   //  console.log("=>", queryResult);
   //  client.release();
   return queryResult;
+  } catch(e) {
+    console.error("db error", e);
+    throw e;
+  }
 }
 
 export interface QueryInsertOptions {
@@ -93,3 +100,4 @@ export function queryObjectBuilder<T extends QueryResultRow, R = BaseQueryObject
     },
   }) as R;
 }
+
