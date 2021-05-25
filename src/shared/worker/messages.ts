@@ -1,5 +1,6 @@
 export interface CommandMessage {
   type: "command";
-}
+  command: string;
+} 
 
-type Message = CommandMessage;
+export type Message = CommandMessage;

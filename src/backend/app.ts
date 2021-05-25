@@ -4,6 +4,7 @@ import Queue, { ProcessCallbackFunction } from "bull";
 import { World } from "./world";
 import Express from "express";
 import { initializeRouter } from "./route-setup";
+import { Message } from "../shared/worker/messages";
 
 const workQueue = new Queue("work", REDIS_URL);
 
@@ -13,8 +14,10 @@ const workProcessor: ProcessCallbackFunction<any> = async (job) => {
   if (!data.type) {
     return { type: "error", message: "Invalid request type" };
   }
-  switch (data.type) {
+  const message = data as Message;
+  switch (message.type) {
     case "command":
+      console.log(message.command);
       break;
   }
   return { value: "hello" };
