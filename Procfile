@@ -1,2 +1,1 @@
-web: npm run start:backend
-slack: npm run start:slack
+web: npm run start:single-dyno

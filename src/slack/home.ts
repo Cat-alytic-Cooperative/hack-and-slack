@@ -13,11 +13,11 @@ export default function initializeHomeTab(app: App) {
     console.log(props.event);
 
     const account = await getAccountBySlackId(props.event.user);
+    console.log(account);
 
     let blocks: (Block | KnownBlock)[] = [];
-    //    if (world.players.get(props.event.user)) {
-    blocks = [Section({ text: Mrkdwn(`Welcome back to Hack and Slack, <@${props.event.user}> :crossed_swords:`) })];
-    /*
+    if (account) {
+      blocks = [Section({ text: Mrkdwn(`Welcome back to Hack and Slack, <@${props.event.user}> :crossed_swords:`) })];
     } else {
       blocks = [
         Section({
@@ -25,10 +25,11 @@ export default function initializeHomeTab(app: App) {
             `Welcome to Hack and Slack, <@${props.event.user}> :crossed_swords:. Before you can begin your adventure, you must create a character.`
           ),
         }),
+        Actions(undefined, [Button(`Register this Slack account`, 'register_account')]),
         Actions(undefined, [Button(`:heavy_plus_sign: Create a Character`, "create_character")]),
       ];
     }
-*/
+
     props.client.views.publish({
       user_id: props.event.user,
       view: {

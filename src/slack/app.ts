@@ -34,7 +34,7 @@ workQueue.on("global:completed", (jobId, result) => {
   console.log(`${jobId} =>`, result);
 });
 
-(async () => {
+export async function main() {
   try {
     //  await expressReceiver.start(Number(process.env.PORT) || 3000);
     const port = Number(process.env.PORT) || 5000;
@@ -49,4 +49,4 @@ workQueue.on("global:completed", (jobId, result) => {
   } catch (e) {
     console.error(e);
   }
-})();
+}
