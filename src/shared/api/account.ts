@@ -1,13 +1,19 @@
-import axios from "axios";
+import { Accounts } from "../database/account";
 import { Account } from "../models/account";
+import { getApi } from "./api";
 
-export async function getAccountBySlackId(id: string = "<missing>") {
-  try {
-    const response = await axios.get<Account>(`http://localhost:5000/api/account/${id}`);
-    const data = response.data;
-    console.log("data", data);
-    return Object.assign(new Account(), data);
-  } catch (e) {
-    return undefined;
-  }
+export async function getAccountBySlackId(id = "<missing>") {
+  return getApi<Account>(`account/${id}`, Account);
+}
+
+export interface AccountRegistration {
+  slackId: string;
+}
+
+export interface PlayerCreation {
+  slackId: string;
+}
+
+export async function registerAccountAndPlayer(slackId: string, ) {
+  Accounts.insert
 }

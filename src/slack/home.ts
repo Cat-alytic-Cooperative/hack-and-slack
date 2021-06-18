@@ -1,4 +1,4 @@
-import { Section, Mrkdwn, Button } from "@slack-wrench/blocks";
+import { Section, Mrkdwn, Button, PlainText } from "@slack-wrench/blocks";
 import { App, Block, KnownBlock } from "@slack/bolt";
 import { Actions } from "./blocks/actions-block";
 
@@ -8,6 +8,25 @@ import { getAccountBySlackId } from "../shared/api/account";
 
 export default function initializeHomeTab(app: App) {
   console.log("Initializing app home");
+
+  app.action("register_account", async (props) => {
+    console.log("register_action", props);
+    props.ack();
+    if ("trigger_id" in props.body) {
+      props.client.views.open({
+        trigger_id: props.body.trigger_id,
+        view: {
+          type: "modal",
+          title: PlainText("Create a Character"),
+          blocks: [
+            Section({
+              text: Mrkdwn(`Let's get it on!`),
+            }),
+          ],
+        },
+      });
+    }
+  });
 
   app.event("app_home_opened", async (props) => {
     console.log(props.event);
@@ -22,11 +41,10 @@ export default function initializeHomeTab(app: App) {
       blocks = [
         Section({
           text: Mrkdwn(
-            `Welcome to Hack and Slack, <@${props.event.user}> :crossed_swords:. Before you can begin your adventure, you must create a character.`
+            `Welcome to Hack and Slack, <@${props.event.user}> :crossed_swords:. Before you can begin your adventure, you must register your Slack account and create a character.`
           ),
         }),
-        Actions(undefined, [Button(`Register this Slack account`, 'register_account')]),
-        Actions(undefined, [Button(`:heavy_plus_sign: Create a Character`, "create_character")]),
+        Actions(undefined, [Button(`Register and Create a Character`, "create_character")]),
       ];
     }
 
