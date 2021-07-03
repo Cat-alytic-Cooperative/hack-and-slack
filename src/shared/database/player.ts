@@ -1,1 +1,1 @@
-import { AccountId } from "../models/account";
+import { AccountId } from "../../backend/world/account";

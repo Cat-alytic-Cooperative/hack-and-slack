@@ -34,11 +34,11 @@ workQueue.on("global:completed", (jobId, result) => {
   console.log(`${jobId} =>`, result);
 });
 
-export async function main() {
+export function main() {
   try {
     //  await expressReceiver.start(Number(process.env.PORT) || 3000);
     const port = Number(process.env.PORT) || 5000;
-    const server = await app.start(port);
+    app.start(port);
     /*
   setInterval(async () => {
     const job = await workQueue.add({ jobDetails: 1 });

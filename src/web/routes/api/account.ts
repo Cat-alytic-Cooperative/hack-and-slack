@@ -1,5 +1,5 @@
 import { Accounts } from "../../../shared/database/account";
-import { Account } from "../../../shared/models/account";
+import { Account } from "../../../backend/world/account";
 import { tryRequestHandler } from "../../route-setup";
 
 export const post = tryRequestHandler(async (req, res, next) => {

@@ -1,10 +1,10 @@
 import Express from "express";
 import { initializeRouter } from "../web/route-setup";
 
-export async function main() {
+export function main() {
   const app = Express();
 
-  await initializeRouter(app);
+  initializeRouter(app);
 
   app.get("/error", (req, res) => {
     res.send("Oh noes");

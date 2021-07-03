@@ -1,7 +1,7 @@
 import { QueryResult } from "pg";
 import { BaseQueryObject, performQuery, queryObjectBuilder } from "./connection";
 
-import { Account } from "../models/account";
+import { Account } from "../../backend/world/account";
 
 export interface AccountQueryObject extends BaseQueryObject<Account> {
   getBySlackId(id: string): Promise<QueryResult<Account>>;

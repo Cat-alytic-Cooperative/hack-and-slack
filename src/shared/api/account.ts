@@ -1,5 +1,5 @@
 import { Accounts } from "../database/account";
-import { Account } from "../models/account";
+import { Account } from "../../backend/world/account";
 import { getApi } from "./api";
 
 export async function getAccountBySlackId(id = "<missing>") {
