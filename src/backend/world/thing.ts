@@ -6,14 +6,8 @@ export interface Thing {
 
 export class ThingMap<K, V extends Thing> extends Map<K, V> {
   getAllByName(name: string) {
-    const things: V[] = [];
     name = name.toLowerCase();
-    for (let thing of this.values()) {
-      if (thing.name.toLowerCase() === name) {
-        things.push(thing);
-      }
-    }
-    return things;
+    return [...this.values()].filter((thing) => thing.name.toLowerCase() === name);
   }
 
   getByName(name: string) {

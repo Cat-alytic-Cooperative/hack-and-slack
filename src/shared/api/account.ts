@@ -1,9 +1,9 @@
 import { Accounts } from "../database/account";
-import { Account } from "../../backend/world/account";
+import { Client } from "../../backend/world/client";
 import { getApi } from "./api";
 
 export async function getAccountBySlackId(id = "<missing>") {
-  return getApi<Account>(`account/${id}`, Account);
+  return getApi<Client>(`account/${id}`, Client);
 }
 
 export interface AccountRegistration {

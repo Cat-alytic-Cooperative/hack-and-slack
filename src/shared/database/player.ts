@@ -1,1 +1,1 @@
-import { AccountId } from "../../backend/world/account";
+import { ClientId } from "../../backend/world/client";

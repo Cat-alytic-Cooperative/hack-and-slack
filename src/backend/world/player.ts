@@ -1,23 +1,25 @@
 import { WORLD } from "../world";
-import { Account, AccountId } from "./account";
+import { Client } from "./client";
+import { Character } from "./character";
 import { Room } from "./room";
 import { Thing, ThingMap } from "./thing";
 
-export type PlayerId = number & { __flavor?: "player" };
-export class Player implements Thing {
-  id: PlayerId = 0;
-  account?: AccountId;
-  name = "";
-  description = "";
+export enum PlayerState {
+  CREATE_NAME,
+  PLAYING,
+}
 
-  location?: Room;
+export type PlayerId = number & { __flavor?: "player" };
+export class Player extends Character {
+  id: PlayerId = 0;
+  client?: Client;
+
+  state = PlayerState.PLAYING;
 
   // Player idle time (in seconds)
   idle = 0;
 
-  connect() {
-    
-  }
+  connect() {}
 
   disconnect() {
     this.save();
@@ -41,13 +43,11 @@ export class Player implements Thing {
 }
 
 export class PlayerMap extends ThingMap<PlayerId, Player> {
-  getAllByAccount(account: Account) {
-    const players: Player[] = [];
-    for (let player of this.values()) {
-      if (player.account === account.id) {
-        players.push(player);
-      }
-    }
-    return players;
+  getAllByAccount(account: Client) {
+    return [...this.values()].filter((player) => player.client === account);
+  }
+
+  getByAccount(account: Client) {
+    return this.getAllByAccount(account)[0];
   }
 }

@@ -6,9 +6,9 @@ import { main as web } from "../web/app";
 async function singleDynoMain() {
   try {
     backend();
-    slack();
+//    slack();
     discord();
-    web();
+//    web();
   } catch (e) {
     console.error(e);
   }

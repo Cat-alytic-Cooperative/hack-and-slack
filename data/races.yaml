@@ -1,0 +1,20 @@
+-
+  name: Human
+  playable: true
+-
+  name: Dwarf
+  playable: true
+  abilityScores:
+    constitution: 2
+  rav:
+    poison: resist
+  skills:
+    weapon:
+      - battleaxe
+      - handaxe
+      - light hammer
+      - warhammer
+    languages:
+      - dwarven
+  features:
+    - darkvision
