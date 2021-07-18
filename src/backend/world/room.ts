@@ -1,5 +1,6 @@
 import { Character } from "./character";
 import { Player } from "./player";
+import { Thing } from "./thing";
 
 export type RoomContent = Player | Character;
 
@@ -9,14 +10,14 @@ export class Room {
   name = "";
   description = "";
 
-  contents = new Set<RoomContent>();
+  contents = new Set<Thing>();
 
-  add(thing: RoomContent) {
+  add(thing: Thing) {
     this.contents.add(thing);
     thing.location = this;
   }
 
-  remove(thing: RoomContent) {
+  remove(thing: Thing) {
     this.contents.delete(thing);
     thing.location = undefined;
   }

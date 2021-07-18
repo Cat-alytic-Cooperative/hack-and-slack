@@ -1,11 +1,22 @@
 import { Player } from "./player";
 import Queue from "bull";
+import { WORLD } from "../world";
+
+export enum ClientState {
+  ACTIVE,
+  IDLE,
+  AFK,
+}
 
 export class ClientBuffer {
   buffer: string[] = [];
 
-  add(input: string): number {
-    this.buffer.push(input);
+  add(input: string | string[]): number {
+    if (Array.isArray(input)) {
+      this.buffer.push(...input);
+    } else {
+      this.buffer.push(input);
+    }
     return this.buffer.length;
   }
 
@@ -20,15 +31,25 @@ export class ClientBuffer {
 
 export abstract class Client {
   clientId = "";
+  state = ClientState.ACTIVE;
   player?: Player;
   input = new ClientBuffer();
   output = new ClientBuffer();
+  lastInput = Date.now();
 
   constructor(clientId: string) {
     this.clientId = clientId;
   }
 
   abstract send(buffer: string | string[] | ClientBuffer): void;
+
+  disconnect() {
+    if (this.player) {
+      this.player.client = undefined;
+      this.player = undefined;
+    }
+    WORLD.clients.delete(this.clientId);
+  }
 }
 
 export class DiscordClient extends Client {

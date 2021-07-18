@@ -1,16 +1,20 @@
 import { Trie } from "../shared/util/trie";
-import { ClientId, Client, ClientMap } from "./world/client";
+import { CommandList } from "./state/playing-interpreter";
+import { ClientMap } from "./world/client";
 import { ExitId, Exit } from "./world/exit";
-import { Player, PlayerId, PlayerMap } from "./world/player";
-import { Race, RaceId, RaceMap } from "./world/race";
+import { PlayerMap } from "./world/player";
+import { RaceMap } from "./world/race";
 import { RoomId, Room } from "./world/room";
-import { ThingMap } from "./world/thing";
 
 const timings = {
   ticksPerSecond: 10,
   playerTicks: 1,
-}
+};
 const MAX_IDLE_TIME = 600; // Clear player after this amount of time
+
+export interface CommandModule {
+  Commands: CommandList;
+}
 
 export class World {
   players = new PlayerMap();
@@ -26,8 +30,24 @@ export class World {
   }
 
   addCommands() {
-    this.commands.insert("quit");
-    this.commands.insert("help");
+    const promises = ["information"].map((name) =>
+      import(`./state/commands/${name}`).then((module: CommandModule) => {
+        if (!module.Commands) {
+          return;
+        }
+
+        Object.entries(module.Commands).forEach(([name, method]) => {
+          this.commands.insert(name);
+        });
+      })
+    );
+    Promise.all(promises)
+      .then(() => {
+        console.log("All command modules are loaded.");
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 
   addRaces() {

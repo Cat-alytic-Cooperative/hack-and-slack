@@ -28,9 +28,6 @@ export class Player extends Character {
     this.location?.remove(this);
 
     // Remove the player as a target, from any lists, etc.
-
-    // Remove the player from the world cache
-    WORLD.players.delete(this.id);
   }
 
   save() {
@@ -40,14 +37,18 @@ export class Player extends Character {
   tick() {
     // Things that happen each tick
   }
+
+  send(output: string | string[]) {
+    this.client?.output.add(output);
+  }
 }
 
 export class PlayerMap extends ThingMap<PlayerId, Player> {
-  getAllByAccount(account: Client) {
+  getAllByClient(account: Client) {
     return [...this.values()].filter((player) => player.client === account);
   }
 
-  getByAccount(account: Client) {
-    return this.getAllByAccount(account)[0];
+  getByClient(account: Client) {
+    return this.getAllByClient(account)[0];
   }
 }
