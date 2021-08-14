@@ -14,9 +14,14 @@ function lookRoom(player: Player) {
 }
 
 export const Commands: CommandList = {
+  list(player: Player, command: string, args: string[]) {
+    console.log("list");
+  },
   look(player: Player, command: string, args: string[]) {
+    console.log("look", command, args);
     if (args.length === 0 || args[1] === "here") {
       lookRoom(player);
     }
   },
 };
+Commands["l"] = Commands.look;

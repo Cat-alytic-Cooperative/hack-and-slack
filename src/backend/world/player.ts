@@ -9,14 +9,9 @@ export enum PlayerState {
   PLAYING,
 }
 
-export type PlayerId = number & { __flavor?: "player" };
 export class Player extends Character {
-  id: PlayerId = 0;
   client?: Client;
-
   state = PlayerState.PLAYING;
-
-  // Player idle time (in seconds)
   idle = 0;
 
   connect() {}
@@ -25,7 +20,7 @@ export class Player extends Character {
     this.save();
 
     // Remove the player from their current location
-    this.location?.remove(this);
+    //    this.moveFrom();
 
     // Remove the player as a target, from any lists, etc.
   }
@@ -43,7 +38,7 @@ export class Player extends Character {
   }
 }
 
-export class PlayerMap extends ThingMap<PlayerId, Player> {
+export class PlayerMap extends ThingMap<number, Player> {
   getAllByClient(account: Client) {
     return [...this.values()].filter((player) => player.client === account);
   }

@@ -4,8 +4,6 @@ export interface Thing {
   id: number;
   name: string;
   description: string;
-
-  location?: Room | Thing;
 }
 
 export class ThingMap<K, V extends Thing> extends Map<K, V> {

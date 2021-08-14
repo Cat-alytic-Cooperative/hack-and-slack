@@ -36,6 +36,7 @@ export abstract class Client {
   input = new ClientBuffer();
   output = new ClientBuffer();
   lastInput = Date.now();
+  snoopyBy?: Client;
 
   constructor(clientId: string) {
     this.clientId = clientId;

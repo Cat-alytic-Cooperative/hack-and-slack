@@ -34,69 +34,6 @@ function startDiscordConnectionManager() {
 }
 
 export function main() {
-  /*
-  function sendMessage(to: string, text: string) {
-    if (to.startsWith("DISCORD")) {
-      discordQueue.add({
-        type: "response",
-        to: to,
-        text: text,
-      });
-    }
-  }
-
-  function interpret(player: Player, command: CommandMessage) {
-    let data: any = {};
-    const foundCommand = WORLD.commands.searchFor(command.command);
-    console.log(player);
-    console.log(foundCommand);
-
-    const account = player.account;
-    if (!account) {
-
-    }
-
-    if (!account.player) {
-      if (data.type !== "command") {
-        return console.log("Invalid command message", data);
-      }
-      switch (data.command) {
-        case "list":
-        case "who":
-          // List the people who are playing
-          sendMessage(userId, "Connected players:");
-          break;
-        case "create":
-          if (!data.arguments?.[0]) {
-            return sendMessage(data.from, "What is the name of the player you want to create?");
-          }
-          const proposedName = data.arguments[0];
-          console.log(`Create a player named ${proposedName}`);
-          if (WORLD.players.getByName(proposedName)) {
-            return sendMessage(data.from, "That name is already in use.");
-          }
-          const newPlayer = new Player();
-          newPlayer.name = proposedName;
-          newPlayer.account = account;
-          newPlayer.state = PlayerState.CREATE_NAME;
-          sendMessage(userId, "Welcome to Hack and Slack. Please choose what race you wish to play.");
-          break;
-        default:
-          sendMessage(userId, "Unknown command.");
-          break;
-      }
-    } else {
-      switch (account.player.state) {
-        case PlayerState.CREATE_NAME:
-          sendMessage(userId, `Welcome to Hack and Slack`);
-          break;
-        case PlayerState.PLAYING:
-          interpret(account.player, data);
-          break;
-      }
-    }
-  }
-*/
   function processLoginInput(client: Client, input: string) {
     const args = input.split(/\s+/);
     const command = args.shift()?.toLowerCase();
@@ -106,18 +43,29 @@ export function main() {
         break;
       case "create":
         // Create a new player
-        const playerName = args.shift();
+        let playerName = args.shift();
         if (!playerName) {
           return client.send(`You must provide the name for your player.`);
         }
         if (WORLD.players.getByName(playerName)) {
           return client.send(`A player named '${playerName}' already exists.`);
         }
-        client.player = new Player();
-        client.player.state = PlayerState.CREATE_NAME;
+        let player = new Player();
+        client.player = player;
+        player.client = client;
+        player.state = PlayerState.PLAYING;
+        player.room = WORLD.rooms.get(0);
+        return client.send(`Welcome to the world, ${playerName}.`);
         break;
       case "connect":
         // Play an existing character
+        playerName = args.shift();
+        if (!playerName) {
+          return client.send(`You must provide the name for your player.`);
+        }
+        if (!WORLD.players.getByName(playerName)) {
+          return client.send(`No players named '${playerName}' exist.`);
+        }
         break;
       default:
         client.send(`Unknown command '${command}'.`);
@@ -130,13 +78,31 @@ export function main() {
     if (!player) {
       return;
     }
+    console.log("Character Creation", input);
     switch (player.state) {
       case PlayerState.CREATE_NAME:
         break;
     }
   }
 
-  function processPlayingInput(client: Client, input: string) {}
+  function processPlayingInput(client: Client, input: string) {
+    console.log("Playing", input);
+    const args = input.split(/\s+/);
+    const command = args.shift()?.toLowerCase();
+    if (!command) {
+      return client.send("Huh?");
+    }
+    const results = WORLD.findCommand(command);
+    if (results === undefined) {
+      return client.send(`Huh?`);
+    } else if (Array.isArray(results)) {
+      return client.send(`What do you mean? ${results.map((entry) => entry.phrase).join(", ")}`);
+    } else if (results.action) {
+      results.action(client.player, command, args);
+    } else {
+      console.error(`Command '${command}' has no corresponding action.`);
+    }
+  }
 
   function processInput(client: Client) {
     const input = client.input.get();
@@ -173,8 +139,10 @@ export function main() {
     let inLoop = false;
     let counter = 0;
     const loopTimer = setInterval(() => {
+      counter++;
+
       // If the previous iteration is still running, then skip this iteration
-      if (counter++ % 100 == 0) {
+      if (counter % 100 == 0) {
         console.log(`Loop: ${WORLD.clients.size} clients`);
       }
       if (inLoop) {
