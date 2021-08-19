@@ -1,14 +1,15 @@
 import { WORLD } from "./world";
 import { Acts } from "./world/act";
 import { Affects } from "./world/affect";
-import { Character, CommunicationFlags, Position } from "./world/character";
+import { Character, CommunicationFlags } from "./world/character";
+import { Position } from "./world/data-types/position";
 import { Player } from "./world/player";
 
 export function interpreter(ch: Character, args: string) {
   // No hiding
   ch.affectedBy.delete(Affects.Hide);
 
-  if (!ch.isNPC() && ch.act.has(Acts.Freeze)) {
+  if (!ch.isNPC && ch.act.has(Acts.Freeze)) {
     return ch.send("You're totally frozen.");
   }
 
@@ -28,7 +29,7 @@ export function interpreter(ch: Character, args: string) {
     //     log = '';
   }
 
-  if ((!ch.isNPC() && ch.act.has(Acts.Log)) || WORLD.flags.logAll /* cmd is set to always log */) {
+  if ((!ch.isNPC && ch.act.has(Acts.Log)) || WORLD.flags.logAll /* cmd is set to always log */) {
     log = `Log ${ch.name}: log`;
     WORLD.wiznet(log, ch /* NULL, WIZ_SECURE, 0, ch.getTrust()*/);
     console.log(log);
@@ -72,7 +73,7 @@ function checkSocial(ch: Character, commmand: string, args: string) {
     return false;
   }
 
-  if (!ch.isNPC() && ch.comm.has(CommunicationFlags.NoEmote)) {
+  if (!ch.isNPC && ch.comm.has(CommunicationFlags.NoEmote)) {
     ch.send("You are anti-social!");
     return true;
   }
@@ -120,8 +121,7 @@ function checkSocial(ch: Character, commmand: string, args: string) {
 	act( social_table[cmd].char_found,    ch, NULL, victim, TO_CHAR    );
 	act( social_table[cmd].vict_found,    ch, NULL, victim, TO_VICT    );
   */
-    if (!ch.isNPC() && victim.isNPC() && !victim.affectedBy.has(Affects.Charm) && victim.isAwake()) {
-      
+    if (!ch.isNPC && victim.isNPC && !victim.affectedBy.has(Affects.Charm) && victim.isAwake) {
     }
   }
   return true;

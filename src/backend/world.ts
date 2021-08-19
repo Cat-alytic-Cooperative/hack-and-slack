@@ -2,10 +2,15 @@ import { Trie } from "../shared/util/trie";
 import { CommandList } from "./state/playing-interpreter";
 import { Character } from "./world/character";
 import { ClientMap } from "./world/client";
-import { ExitId, Exit } from "./world/exit";
+import { DamageType } from "./world/data-types/damage-types";
+import { Dice } from "./world/data-types/dice";
+import { Direction } from "./world/data-types/directions";
+import { Exit } from "./world/exit";
+import { WeaponItemPrototype } from "./world/item";
+import { Mobile, MobilePrototype } from "./world/mobile";
 import { PlayerMap } from "./world/player";
 import { RaceMap } from "./world/race";
-import { RoomId, Room } from "./world/room";
+import { Room } from "./world/room";
 
 const timings = {
   ticksPerSecond: 10,
@@ -19,8 +24,8 @@ export interface CommandModule {
 
 export class World {
   players = new PlayerMap();
-  rooms = new Map<RoomId, Room>();
-  exits = new Map<ExitId, Exit>();
+  rooms = new Map<number, Room>();
+  exits = new Map<number, Exit>();
   clients = new ClientMap();
   commands = {
     lookup: new Trie(),
@@ -44,10 +49,42 @@ export class World {
     startRoom.name = "Starting Room";
     startRoom.description = "This is the starting room.";
     this.rooms.set(0, startRoom);
+
+    const startExit = new Exit();
+    startExit.name = "Second Room";
+    startRoom.exits.set(Direction.North, startExit);
+
+    const secondRoom = new Room();
+    secondRoom.name = "Second Room";
+    secondRoom.description = "This is the second room.";
+    this.rooms.set(1, secondRoom);
+    startExit.destination = secondRoom;
+
+    const secondExit = new Exit();
+    secondExit.name = "Second Exit";
+    secondExit.destination = startRoom;
+    secondRoom.exits.set(Direction.South, secondExit);
+
+    const mobilePrototype = new MobilePrototype();
+    mobilePrototype.name = "guard";
+    mobilePrototype.shortDescription = "A guard is standing here.";
+    mobilePrototype.description = "The guard is dressed reall nicely.";
+
+    const mobile = mobilePrototype.newInstance();
+    mobile.moveTo(secondRoom);
+
+    const swordPrototype = new WeaponItemPrototype();
+    swordPrototype.name = "sword"
+    swordPrototype.shortDescription = "A sword is laying on the ground here."
+    swordPrototype.damageType = DamageType.Slashing;
+    swordPrototype.damage = Dice.from("1d8");
+
+    const sword = swordPrototype.newInstance();
+    sword.moveTo(startRoom)
   }
 
   addCommands() {
-    const promises = ["information"].map((name) =>
+    const promises = ["information", "movement", "object"].map((name) =>
       import(`./state/commands/${name}`).then((module: CommandModule) => {
         if (!module.Commands) {
           return;

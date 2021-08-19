@@ -1,3 +1,7 @@
+import dotenv from "dotenv";
+
+dotenv.config();
+
 import { main as backend } from "../backend/app";
 import { main as slack } from "../slack/app";
 import { main as discord } from "../discord/app";

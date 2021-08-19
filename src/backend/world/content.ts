@@ -1,6 +1,6 @@
-import { Thing } from "./thing";
+import { Item } from "./item";
 
-export class Contents extends Set<Thing> {
+export class Contents extends Set<Item> {
 
 }
 

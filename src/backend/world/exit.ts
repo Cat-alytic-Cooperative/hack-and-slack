@@ -1,6 +1,13 @@
-export type ExitId = number & { __flavor?: "exit" };
+import { Character } from "./character";
+import { Room } from "./room";
+
 export class Exit {
-  id: ExitId = 0;
+  id = 0;
   name = "";
   description = "";
+  destination?: Room;
+
+  isVisibleTo(ch: Character) {
+    return true;
+  }
 }

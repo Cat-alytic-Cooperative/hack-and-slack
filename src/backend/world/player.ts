@@ -13,6 +13,7 @@ export class Player extends Character {
   client?: Client;
   state = PlayerState.PLAYING;
   idle = 0;
+  logon = Date.now();
 
   connect() {}
 
@@ -35,6 +36,10 @@ export class Player extends Character {
 
   send(output: string | string[]) {
     this.client?.output.add(output);
+  }
+
+  get isNPC() {
+    return false;
   }
 }
 

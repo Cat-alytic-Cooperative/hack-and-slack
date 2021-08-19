@@ -6,7 +6,7 @@ import { CommandMessage, Message } from "../shared/worker/messages";
 import { Player, PlayerState } from "./world/player";
 import { Client, ClientState, DiscordClient } from "./world/client";
 
-const TICKS_PER_SECOND = 10;
+const TICKS_PER_SECOND = 20;
 const MILLISECONDS_PER_TICK = 1000 / TICKS_PER_SECOND;
 
 function startDiscordConnectionManager() {
@@ -37,20 +37,22 @@ export function main() {
   function processLoginInput(client: Client, input: string) {
     const args = input.split(/\s+/);
     const command = args.shift()?.toLowerCase();
+    let playerName;
+    let player: Player | undefined;
     switch (command) {
       case "who":
         // List the players currently connected
         break;
       case "create":
         // Create a new player
-        let playerName = args.shift();
+        playerName = args.shift();
         if (!playerName) {
           return client.send(`You must provide the name for your player.`);
         }
         if (WORLD.players.getByName(playerName)) {
           return client.send(`A player named '${playerName}' already exists.`);
         }
-        let player = new Player();
+        player = new Player();
         client.player = player;
         player.client = client;
         player.state = PlayerState.PLAYING;
@@ -63,9 +65,14 @@ export function main() {
         if (!playerName) {
           return client.send(`You must provide the name for your player.`);
         }
-        if (!WORLD.players.getByName(playerName)) {
+        player = WORLD.players.getByName(playerName);
+        if (!player) {
           return client.send(`No players named '${playerName}' exist.`);
         }
+        client.player = player;
+        player.client = client;
+        player.state = PlayerState.PLAYING;
+        return client.send(`Welcome back, ${player.name}`);
         break;
       default:
         client.send(`Unknown command '${command}'.`);
@@ -96,9 +103,9 @@ export function main() {
     if (results === undefined) {
       return client.send(`Huh?`);
     } else if (Array.isArray(results)) {
-      return client.send(`What do you mean? ${results.map((entry) => entry.phrase).join(", ")}`);
+      return client.send(`Which do you mean? ${results.map((entry) => entry.phrase).join(", ")}`);
     } else if (results.action) {
-      results.action(client.player, command, args);
+      results.action({ ch: client.player, command, args });
     } else {
       console.error(`Command '${command}' has no corresponding action.`);
     }
@@ -110,6 +117,12 @@ export function main() {
       return;
     }
     client.lastInput = Date.now();
+    if (client.state === ClientState.AFK) {
+      client.send("You are no longer away from keyboard.");
+    } else if (client.state === ClientState.IDLE) {
+      client.send("You are no longer idle.");
+    }
+    client.state = ClientState.ACTIVE;
 
     console.log(`Input from ${client.clientId}: ${input}`);
     if (!client.player) {
@@ -117,8 +130,10 @@ export function main() {
       // allowed.
       return processLoginInput(client, input);
     } else if (client.player.state !== PlayerState.PLAYING) {
+      // The Player is not playing, so this is character creation
       return processCharacterCreationInput(client, input);
     } else {
+      // Playing!
       return processPlayingInput(client, input);
     }
   }
