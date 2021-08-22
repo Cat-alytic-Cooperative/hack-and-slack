@@ -1,1 +1,1 @@
-mud: npm run start:single-dyno
+web: npm run start:single-dyno

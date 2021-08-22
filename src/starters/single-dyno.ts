@@ -12,7 +12,7 @@ async function singleDynoMain() {
     backend();
 //    slack();
     discord();
-//    web();
+    web();
   } catch (e) {
     console.error(e);
   }
