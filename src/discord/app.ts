@@ -56,5 +56,6 @@ export function main() {
       });
     });
   });
+  console.log(`Discord token is ${process.env.DISCORD_TOKEN}`)
   client.login(process.env.DISCORD_TOKEN);
 }
