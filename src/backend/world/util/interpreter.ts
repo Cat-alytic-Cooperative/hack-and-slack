@@ -1,9 +1,9 @@
-import { WORLD } from "./world";
-import { Acts } from "./world/act";
-import { Affects } from "./world/affect";
-import { Character, CommunicationFlags } from "./world/character";
-import { Position } from "./world/data-types/position";
-import { Player } from "./world/player";
+import { WORLD } from "../../world";
+import { Acts } from "../act";
+import { Affects } from "../affect";
+import { Character, CommunicationFlags } from "../entities/character";
+import { Position } from "../data-types/position";
+import { Player } from "../entities/player";
 
 export function interpreter(ch: Character, args: string) {
   // No hiding

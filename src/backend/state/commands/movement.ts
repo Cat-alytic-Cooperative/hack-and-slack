@@ -1,7 +1,8 @@
-import { Character } from "../../world/character";
+import { Character } from "../../world/entities/character";
 import { Direction } from "../../world/data-types/directions";
 import { CommandList } from "../playing-interpreter";
 import { Commands as Information } from "./information";
+import { broadcast, BroadcastTarget } from "../../world/util/broadcast";
 
 function moveCharacter(ch: Character, direction: Direction) {
   if (!ch.room) {
@@ -18,17 +19,19 @@ function moveCharacter(ch: Character, direction: Direction) {
     return ch.send("That exit does not lead anywhere.");
   }
 
+  broadcast(ch, BroadcastTarget.NotActor, `$n move$% ${direction}.`);
   ch.moveFrom();
   ch.moveTo(destination);
+  broadcast(ch, BroadcastTarget.NotActor, `$n enter$% the area.`);
 
-  Information.look({ ch, command: "look", args: [] });
+  Information.look({ ch, command: "look", rest: "" });
 }
 
 export const Commands: CommandList = {
-  north({ ch, command, args }) {
+  north({ ch, command, rest }) {
     moveCharacter(ch, Direction.North);
   },
-  south({ ch, command, args }) {
+  south({ ch, command, rest }) {
     moveCharacter(ch, Direction.South);
   },
 };

@@ -1,29 +1,50 @@
-import { Character } from "../../world/character";
+import { Character } from "../../world/entities/character";
+import { broadcast, BroadcastTarget } from "../../world/util/broadcast";
 import { CommandList } from "../playing-interpreter";
 
 export const Commands: CommandList = {
-  get({ ch, command, args }) {
+  drop({ ch, command, rest }) {
+    if (!ch.room) {
+      return ch.send("You can't drop anything in the void.");
+    }
+
+    if (!rest) {
+      return ch.send("What do you want to drop?");
+    }
+
+    const item = ch.findItem(ch, rest);
+    if (item) {
+      item.moveFrom();
+      item.moveTo(ch.room);
+      broadcast(ch, BroadcastTarget.Room, "$n drop$% $0n.", item);
+    } else {
+      ch.send(`You do not see ${rest} here`);
+    }
+  },
+  get({ ch, command, rest }) {
     if (!ch.room) {
       return ch.send("You can't pick up anything from the void.");
     }
 
-    if (args.length === 0) {
+    if (!rest) {
       return ch.send("What do you want to get?");
     }
 
-    for (let item of ch.room.items.values()) {
-      if (item.name.split(";").includes(args[0])) {
-        item.moveFrom();
-        item.moveTo(ch);
-        ch.send(`You pick up ${item.name}`);
-        return;
-      }
+    const item = ch.room.findItem(ch, rest);
+    if (item) {
+      item.moveFrom();
+      item.moveTo(ch);
+      broadcast(ch, BroadcastTarget.Room, "$n get$% $0n.", item);
+    } else {
+      ch.send(`You do not see ${rest} here`);
     }
-
-    ch.send(`You do not see ${args[0]} here`);
   },
-  inventory({ ch, command, args }) {
+  inventory({ ch, command, rest }) {
     const items = Array.from(ch.items, (item) => `- ${item.name}`);
+    items.unshift("You are carrying:");
+    if (items.length === 0) {
+      items.push("Nothing");
+    }
     ch.send(items);
   },
 };

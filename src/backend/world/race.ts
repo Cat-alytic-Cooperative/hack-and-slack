@@ -1,4 +1,4 @@
-import { Thing, ThingMap } from "./thing";
+import { Thing, ThingMap } from "./entities/thing";
 
 export class Race implements Thing {
   id = 0;

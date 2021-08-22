@@ -3,10 +3,10 @@ const REDIS_URL = String(process.env.REDIS_URL);
 import Queue, { ProcessCallbackFunction } from "bull";
 import { WORLD, World } from "./world";
 import { CommandMessage, Message } from "../shared/worker/messages";
-import { Player, PlayerState } from "./world/player";
+import { Player, PlayerState } from "./world/entities/player";
 import { Client, ClientState, DiscordClient } from "./world/client";
 
-const TICKS_PER_SECOND = 20;
+const TICKS_PER_SECOND = 100;
 const MILLISECONDS_PER_TICK = 1000 / TICKS_PER_SECOND;
 
 function startDiscordConnectionManager() {
@@ -53,12 +53,16 @@ export function main() {
           return client.send(`A player named '${playerName}' already exists.`);
         }
         player = new Player();
+        player.name = playerName;
         client.player = player;
         player.client = client;
         player.state = PlayerState.PLAYING;
-        player.room = WORLD.rooms.get(0);
+        WORLD.players.set(player.id, player);
+        const startingRoom = WORLD.rooms.get(0);
+        if (startingRoom) {
+          player.moveTo(startingRoom);
+        }
         return client.send(`Welcome to the world, ${playerName}.`);
-        break;
       case "connect":
         // Play an existing character
         playerName = args.shift();
@@ -73,7 +77,13 @@ export function main() {
         player.client = client;
         player.state = PlayerState.PLAYING;
         return client.send(`Welcome back, ${player.name}`);
-        break;
+      case "help":
+        return client.send([
+          "WHO - list active players",
+          "CONNECT <name> - connect as the given player attached to this client account",
+          "CREATE <name> - create a new player attached to this client account",
+          "HELP",
+        ]);
       default:
         client.send(`Unknown command '${command}'.`);
         break;
@@ -92,20 +102,33 @@ export function main() {
     }
   }
 
+  const CommandRegularExpress = /(\S+)(\s+(.*)\s*)?/;
+
   function processPlayingInput(client: Client, input: string) {
-    console.log("Playing", input);
-    const args = input.split(/\s+/);
-    const command = args.shift()?.toLowerCase();
-    if (!command) {
-      return client.send("Huh?");
+    if (!client.player) {
+      console.error(`Client ${client} has no player, but is somehow playing.`);
+      return;
     }
+    console.log("Playing:", input);
+    const args = input.split(/\s+/);
+    const match = CommandRegularExpress.exec(input);
+    console.log({ match });
+    if (!match) {
+      console.error(`Command '${input}' did not match pattern:`, match);
+      return client.player.send(`Huh?`);
+    }
+    const command = match[1];
+    if (!command) {
+      return client.send("What do you want to do?");
+    }
+    const rest = match[3] || "";
     const results = WORLD.findCommand(command);
     if (results === undefined) {
       return client.send(`Huh?`);
     } else if (Array.isArray(results)) {
       return client.send(`Which do you mean? ${results.map((entry) => entry.phrase).join(", ")}`);
     } else if (results.action) {
-      results.action({ ch: client.player, command, args });
+      results.action({ ch: client.player, command, rest });
     } else {
       console.error(`Command '${command}' has no corresponding action.`);
     }
@@ -157,7 +180,7 @@ export function main() {
       counter++;
 
       // If the previous iteration is still running, then skip this iteration
-      if (counter % 100 == 0) {
+      if (counter % 1000 == 0) {
         console.log(`Loop: ${WORLD.clients.size} clients`);
       }
       if (inLoop) {
@@ -165,7 +188,7 @@ export function main() {
       }
       inLoop = true;
 
-      if (counter % 100 == 0) {
+      if (counter % 1000 == 0) {
         console.log("Check input");
       }
 

@@ -1,12 +1,13 @@
 import { Character } from "./character";
-import { DamageType } from "./data-types/damage-types";
-import { Dice } from "./data-types/dice";
-import { nextId } from "./data-types/id";
+import { DamageType } from "../data-types/damage-types";
+import { Dice } from "../data-types/dice";
+import { nextId } from "../data-types/id";
 import { Room } from "./room";
 
 export abstract class ItemPrototype {
   name = "";
   shortDescription = "";
+  longDescription = "";
   description = "";
 
   weight = 0;
@@ -28,6 +29,7 @@ export class Item {
   prototype: ItemPrototype;
   name = "";
   shortDescription = "";
+  longDescription = "";
   description = "";
 
   weight = 0;
@@ -62,6 +64,7 @@ export class Item {
 
     this.name = prototype.name;
     this.shortDescription = prototype.shortDescription;
+    this.longDescription = prototype.longDescription;
     this.description = prototype.description;
 
     this.weight = prototype.weight;
@@ -69,6 +72,10 @@ export class Item {
 
   isVisibleTo(looker: Character) {
     return true;
+  }
+
+  get fullName() {
+    return this.shortDescription
   }
 }
 

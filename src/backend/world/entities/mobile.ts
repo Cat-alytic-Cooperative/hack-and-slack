@@ -1,14 +1,15 @@
 import { Character } from "./character";
-import { AbilityScores } from "./data-types/ability-scores";
-import { Attack } from "./data-types/attack";
-import { DamageType } from "./data-types/damage-types";
-import { Dice } from "./data-types/dice";
-import { nextId } from "./data-types/id";
+import { AbilityScores } from "../data-types/ability-scores";
+import { Attack } from "../data-types/attack";
+import { DamageType } from "../data-types/damage-types";
+import { Dice } from "../data-types/dice";
+import { nextId } from "../data-types/id";
 
 export class MobilePrototype {
   id = 0;
   name = "";
   shortDescription = "";
+  longDescription = "";
   description = "";
 
   money = new Dice();
@@ -51,6 +52,7 @@ export class Mobile extends Character {
 
     this.name = prototype.name;
     this.shortDescription = prototype.shortDescription;
+    this.longDescription = prototype.longDescription;
     this.description = prototype.description;
 
     this.level = prototype.level;
@@ -74,5 +76,9 @@ export class Mobile extends Character {
 
   get isNPC() {
     return true;
+  }
+
+  get fullName() {
+    return this.shortDescription;
   }
 }

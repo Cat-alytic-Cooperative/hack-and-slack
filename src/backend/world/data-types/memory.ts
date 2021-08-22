@@ -1,11 +1,11 @@
-enum MemoryReactions {
+export enum MemoryReactions {
   Customer,
   Seller,
   Hostile,
   Afraid,
 }
 
-class MobileMemory {
+export class MobileMemory {
   when = Date.now();
   id = 0;
   reaction = new Set<MemoryReactions>();

@@ -1,4 +1,4 @@
-import { Player } from "../world/player";
+import { Player } from "../world/entities/player";
 
 export function interpret(player: Player, command: string) {
   

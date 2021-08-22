@@ -1,8 +1,9 @@
-import { WORLD } from "../world";
-import { Client } from "./client";
+import { WORLD } from "../../world";
+import { Client } from "../client";
 import { Character } from "./character";
 import { Room } from "./room";
 import { Thing, ThingMap } from "./thing";
+import { nextId } from "../data-types/id";
 
 export enum PlayerState {
   CREATE_NAME,
@@ -14,6 +15,11 @@ export class Player extends Character {
   state = PlayerState.PLAYING;
   idle = 0;
   logon = Date.now();
+
+  constructor() {
+    super();
+    this.id = nextId(Player);
+  }
 
   connect() {}
 
@@ -35,6 +41,7 @@ export class Player extends Character {
   }
 
   send(output: string | string[]) {
+    super.send(output);
     this.client?.output.add(output);
   }
 

@@ -1,16 +1,16 @@
 import { Trie } from "../shared/util/trie";
-import { CommandList } from "./state/playing-interpreter";
-import { Character } from "./world/character";
+import { CommandArgs, CommandList } from "./state/playing-interpreter";
+import { Character } from "./world/entities/character";
 import { ClientMap } from "./world/client";
 import { DamageType } from "./world/data-types/damage-types";
 import { Dice } from "./world/data-types/dice";
 import { Direction } from "./world/data-types/directions";
-import { Exit } from "./world/exit";
-import { WeaponItemPrototype } from "./world/item";
-import { Mobile, MobilePrototype } from "./world/mobile";
-import { PlayerMap } from "./world/player";
+import { Exit } from "./world/entities/exit";
+import { WeaponItemPrototype } from "./world/entities/item";
+import { Mobile, MobilePrototype } from "./world/entities/mobile";
+import { PlayerMap } from "./world/entities/player";
 import { RaceMap } from "./world/race";
-import { Room } from "./world/room";
+import { Room } from "./world/entities/room";
 
 const timings = {
   ticksPerSecond: 10,
@@ -29,7 +29,7 @@ export class World {
   clients = new ClientMap();
   commands = {
     lookup: new Trie(),
-    map: new Map<string, Function>(),
+    map: new Map<string, (cmd: CommandArgs) => void>(),
   };
   socials = {
     lookup: new Trie(),
@@ -67,24 +67,26 @@ export class World {
 
     const mobilePrototype = new MobilePrototype();
     mobilePrototype.name = "guard";
-    mobilePrototype.shortDescription = "A guard is standing here.";
+    mobilePrototype.shortDescription = "a guard";
+    mobilePrototype.longDescription = "A guard is standing here.";
     mobilePrototype.description = "The guard is dressed reall nicely.";
 
     const mobile = mobilePrototype.newInstance();
     mobile.moveTo(secondRoom);
 
     const swordPrototype = new WeaponItemPrototype();
-    swordPrototype.name = "sword"
-    swordPrototype.shortDescription = "A sword is laying on the ground here."
+    swordPrototype.name = "sword";
+    swordPrototype.shortDescription = "a sword";
+    swordPrototype.longDescription = "A sword is laying on the ground here";
     swordPrototype.damageType = DamageType.Slashing;
     swordPrototype.damage = Dice.from("1d8");
 
     const sword = swordPrototype.newInstance();
-    sword.moveTo(startRoom)
+    sword.moveTo(startRoom);
   }
 
   addCommands() {
-    const promises = ["information", "movement", "object"].map((name) =>
+    const promises = ["information", "movement", "object", "communication", "wizard"].map((name) =>
       import(`./state/commands/${name}`).then((module: CommandModule) => {
         if (!module.Commands) {
           return;

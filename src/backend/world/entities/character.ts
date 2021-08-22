@@ -1,17 +1,18 @@
 import { Client } from "discord.js";
-import { AbilityScore, AbilityScores } from "./data-types/ability-scores";
-import { Acts } from "./act";
-import { Affects } from "./affect";
-import { DamageType } from "./data-types/damage-types";
-import { Money } from "./data-types/money";
-import { Pool } from "./data-types/pool";
-import { Effect, EffectType } from "./data-types/effect";
-import { Position } from "./data-types/position";
+import { AbilityScore, AbilityScores } from "../data-types/ability-scores";
+import { Acts } from "../act";
+import { Affects } from "../affect";
+import { DamageType } from "../data-types/damage-types";
+import { Money } from "../data-types/money";
+import { Pool } from "../data-types/pool";
+import { Effect, EffectType } from "../data-types/effect";
+import { Position } from "../data-types/position";
 import { Room } from "./room";
 import { Item } from "./item";
-import { Profession } from "./profession";
-
-class Affect {}
+import { Profession } from "../profession";
+import { Pronoun } from "../util/broadcast";
+import { Player } from "./player";
+import { findItem } from "../util/objects";
 
 export enum CommunicationFlags {
   NoEmote,
@@ -22,14 +23,15 @@ export abstract class Character {
   shortDescription = "";
   longDescription = "";
   description = "";
+  pronoun = Pronoun.Other;
   prompt = "";
   prefix = "";
   master?: Character;
   leader?: Character;
   fighting?: Character;
+  snoop?: Player;
   pet?: Character;
   reply?: Character;
-  affects: Affect[] = [];
   items = new Set<Item>();
   room?: Room;
   previousRoom?: Room;
@@ -78,8 +80,6 @@ export abstract class Character {
     wisdom: 0,
     charisma: 0,
   };
-  perm_stat: number[] = [];
-  mod_stat: number[] = [];
   form = new Set();
   parts = new Set();
   size = 0;
@@ -115,6 +115,10 @@ export abstract class Character {
 
   get isAwake() {
     return this.position > Position.Sleeping;
+  }
+
+  get fullName() {
+    return this.name;
   }
 
   getAbilityScore(abilityScore: AbilityScore) {
@@ -153,5 +157,19 @@ export abstract class Character {
     return true;
   }
 
-  send(output: string | string[]) {}
+  findItem(looker: Character, target: string) {
+    if (!this.isVisibleTo(looker)) {
+      return undefined;
+    }
+    return findItem(this.items.values(), looker, target);
+  }
+
+  send(output: string | string[]) {
+    if (this.snoop && this.snoop.client) {
+      if (!Array.isArray(output)) {
+        output = [output];
+      }
+      this.snoop.client.send(output.map((line) => `${this.fullName}> ${line}`));
+    }
+  }
 }

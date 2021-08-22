@@ -1,9 +1,10 @@
 import { Character } from "./character";
-import { Contents } from "./content";
-import { Direction } from "./data-types/directions";
+import { Contents } from "../content";
+import { Direction } from "../data-types/directions";
 import { Exit } from "./exit";
 import { Item } from "./item";
 import { Player } from "./player";
+import { findCharacter, findItem } from "../util/objects";
 
 export type RoomContent = Player | Character;
 
@@ -33,7 +34,17 @@ export class Room {
   }
 
   findCharacter(looker: Character, target: string) {
-    return looker;
+    if (!this.isVisibleTo(looker)) {
+      return undefined;
+    }
+    return findCharacter(this.people.values(), looker, target);
+  }
+
+  findItem(looker: Character, target: string) {
+    if (!this.isVisibleTo(looker)) {
+      return undefined;
+    }
+    return findItem(this.items.values(), looker, target);
   }
 
   isVisibleTo(looker: Character) {

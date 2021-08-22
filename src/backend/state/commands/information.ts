@@ -1,9 +1,7 @@
-import { Character } from "../../world/character";
+import { Character, Exit, Item, Room } from "../../world/entities";
 import { Position } from "../../world/data-types/position";
-import { Exit } from "../../world/exit";
-import { Item } from "../../world/item";
-import { Player } from "../../world/player";
 import { CommandList } from "../playing-interpreter";
+import { WORLD } from "../../world";
 
 function personDescription(ch: Character) {
   console.log(ch);
@@ -50,13 +48,84 @@ function lookRoom(ch: Character) {
   ch.send([`*${ch.room.name || "<unknown>"}*`, ch.room.description || "", ...players, ...items, ...exits]);
 }
 
+function lookCharacter(ch: Character, target: Character) {
+  ch.send(`*${target.fullName}*`);
+}
+
+function lookItem(ch: Character, target: Item) {
+  ch.send([`*${target.fullName}*`, target.longDescription]);
+}
+
+function lookThing(looker: Character, thing: Item | Character) {
+  if (thing instanceof Item) {
+    lookItem(looker, thing);
+  } else {
+    lookCharacter(looker, thing);
+  }
+}
+
+interface CanFindCharacterOrItem {
+  findCharacter(looker: Character, target: string): Character | undefined;
+  findItem(looker: Character, target: string): Item | undefined;
+}
+function lookForCharacterOrItem(looker: Character, target: string, place: CanFindCharacterOrItem) {
+  const victim = place.findCharacter(looker, target);
+  if (victim) {
+    return victim;
+  }
+  const item = place.findItem(looker, target);
+  if (item) {
+    return item;
+  }
+  return undefined;
+}
+
 export const Commands: CommandList = {
-  list({ ch, command, args }) {
+  commands({ ch, rest }) {
+    let commands = WORLD.commands.lookup.allWordsFrom().map((entry) => entry.phrase.toLowerCase());
+    if (rest.length) {
+      commands = commands.filter((command) => command.startsWith(rest.toLowerCase()));
+      commands.unshift(`Commands starting with '${rest}':`);
+    } else {
+      commands.unshift("Commands:");
+    }
+    commands.sort();
+    ch.send(commands);
+  },
+  list({ ch, command, rest }) {
     console.log("list");
   },
-  look({ ch, command, args }) {
-    if (args.length === 0 || args[1] === "here") {
+  look({ ch, command, rest }) {
+    if (!ch.room) {
+      return ch.send(`You are not in a location.`);
+    }
+    if (!rest || rest === "here") {
       lookRoom(ch);
+    } else if (rest === "me") {
+      lookCharacter(ch, ch);
+    } else if (rest.startsWith("here ")) {
+      rest = rest.substring(5);
+      const thing = lookForCharacterOrItem(ch, rest, ch.room);
+      if (!thing) {
+        return ch.send("You do not see that here.");
+      }
+      lookThing(ch, thing);
+    } else if (rest.startsWith("me ")) {
+      rest = rest.substring(3);
+      const thing = ch.findItem(ch, rest);
+      if (!thing) {
+        return ch.send("You do not see that on you.");
+      }
+      lookThing(ch, thing);
+    } else {
+      let thing = lookForCharacterOrItem(ch, rest, ch.room);
+      if (!thing) {
+        thing = ch.findItem(ch, rest);
+      }
+      if (!thing) {
+        return ch.send("You do not see that on you.");
+      }
+      lookThing(ch, thing);
     }
   },
 };

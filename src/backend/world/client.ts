@@ -1,4 +1,4 @@
-import { Player } from "./player";
+import { Player } from "./entities/player";
 import Queue from "bull";
 import { WORLD } from "../world";
 
@@ -82,7 +82,7 @@ export class DiscordClient extends Client {
     this.queue.add({
       type: "response",
       to: this.clientId,
-      text: output,
+      text: output.join("\n"),
     });
   }
 }

@@ -6,3 +6,12 @@ export enum Direction {
   Up = "up",
   Down = "down",
 }
+
+export const OppositeDirection = {
+  north: "south",
+  east: "west",
+  south: "north",
+  west: "east",
+  up: "down",
+  down: "up",
+};

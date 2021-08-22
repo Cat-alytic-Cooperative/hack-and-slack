@@ -1,7 +1,6 @@
 type Constructor = new (...args: any[]) => {};
 
 let ids = new Map<Constructor, number>();
-let id = 0;
 
 export function currentId(type: Constructor) {
   return ids.get(type) || 0;

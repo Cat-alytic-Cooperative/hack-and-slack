@@ -4,6 +4,7 @@ import { Room } from "./room";
 export class Exit {
   id = 0;
   name = "";
+  shortDescription = "";
   description = "";
   destination?: Room;
 
