@@ -8,7 +8,9 @@
     "build": "tsc",
     "start:single-dyno": "nodemon --config ./nodemon-single-dyno.json",
     "start:backend": "nodemon --config ./nodemon-backend.json",
-    "start:slack": "nodemon --config ./nodemon-slack.json"
+    "start:slack": "nodemon --config ./nodemon-slack.json",
+    "heroku:stop": "heroku maintenance:on -a hack-and-slack",
+    "heroku:start": "heroku maintenance:off -a hack-and-slack"
   },
   "author": "",
   "license": "ISC",
