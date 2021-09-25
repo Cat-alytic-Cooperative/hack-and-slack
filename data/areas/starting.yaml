@@ -1,0 +1,19 @@
+rooms:
+  first-room:
+    name: The First Room
+    exits: 
+      north:
+        to: second-room
+  second-room:
+    name: The Second Room
+    exits:
+      south:
+        to: first-room
+items:
+  sword:
+    name: a sword
+    type: weapon
+    damage-type: slashing
+    damage: 1d8
+
+

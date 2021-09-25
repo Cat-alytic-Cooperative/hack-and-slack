@@ -1,0 +1,9 @@
+bludgeoning: bash%&
+slashing: slash%&
+piercing: pierce%^
+heat: burn%^
+cold: freeze%^
+electrical: shock%^
+acid: corrode%^
+poison: poison%^
+disease: infect%^

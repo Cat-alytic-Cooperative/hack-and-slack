@@ -1,7 +1,7 @@
 import { Room } from "./room";
 
 export interface Thing {
-  id: number;
+  id: string;
   name: string;
   description: string;
 }

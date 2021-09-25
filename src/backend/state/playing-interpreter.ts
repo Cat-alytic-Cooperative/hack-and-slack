@@ -1,5 +1,6 @@
 import { Character } from "../world/entities";
 import { Position } from "../world/data-types/position";
+import { World } from "../world";
 
 type CommandAction = (ch: Character, command: string, args: string[]) => void;
 
@@ -9,6 +10,7 @@ export interface CommandArgs {
   ch: Character;
   command: string;
   rest: string;
+  world: World;
 }
 
 export interface CommandList {

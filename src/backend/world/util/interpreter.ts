@@ -1,14 +1,10 @@
-import { WORLD } from "../../world";
-import { Acts } from "../act";
 import { Affects } from "../affect";
-import { Character, CommunicationFlags } from "../entities/character";
-import { Position } from "../data-types/position";
-import { Player } from "../entities/player";
+import { Character } from "../entities/character";
 
 export function interpreter(ch: Character, args: string) {
   // No hiding
   ch.affectedBy.delete(Affects.Hide);
-
+  /*
   if (!ch.isNPC && ch.act.has(Acts.Freeze)) {
     return ch.send("You're totally frozen.");
   }
@@ -29,9 +25,9 @@ export function interpreter(ch: Character, args: string) {
     //     log = '';
   }
 
-  if ((!ch.isNPC && ch.act.has(Acts.Log)) || WORLD.flags.logAll /* cmd is set to always log */) {
+  if ((!ch.isNPC && ch.act.has(Acts.Log)) || WORLD.flags.logAll) {
     log = `Log ${ch.name}: log`;
-    WORLD.wiznet(log, ch /* NULL, WIZ_SECURE, 0, ch.getTrust()*/);
+    WORLD.wiznet(log, ch);
     console.log(log);
   }
 
@@ -45,6 +41,7 @@ export function interpreter(ch: Character, args: string) {
       return;
     }
   }
+  */
 }
 
 function oneArgument(args: string) {
@@ -68,6 +65,7 @@ function oneArgument(args: string) {
 }
 
 function checkSocial(ch: Character, commmand: string, args: string) {
+  /*
   const results = WORLD.findSocials(commmand);
   if (!results || Array.isArray(results)) {
     return false;
@@ -104,25 +102,13 @@ function checkSocial(ch: Character, commmand: string, args: string) {
   [target, args] = oneArgument(args);
 
   if (!target || target === "") {
-    /*
-    act( social_table[cmd].others_no_arg, ch, NULL, victim, TO_ROOM    );
-    act( social_table[cmd].char_no_arg,   ch, NULL, victim, TO_CHAR    );
-    */
   } else if (!(victim = ch.room?.findCharacter(ch, target))) {
     ch.send("They aren't here.");
   } else if (victim === ch) {
-    /*
-    act( social_table[cmd].others_auto,   ch, NULL, victim, TO_ROOM    );
-    act( social_table[cmd].char_auto,     ch, NULL, victim, TO_CHAR    );
-    */
   } else {
-    /*
-    act( social_table[cmd].others_found,  ch, NULL, victim, TO_NOTVICT );
-	act( social_table[cmd].char_found,    ch, NULL, victim, TO_CHAR    );
-	act( social_table[cmd].vict_found,    ch, NULL, victim, TO_VICT    );
-  */
     if (!ch.isNPC && victim.isNPC && !victim.affectedBy.has(Affects.Charm) && victim.isAwake) {
     }
   }
   return true;
+  */
 }

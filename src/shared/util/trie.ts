@@ -68,6 +68,24 @@ export class Trie {
     });
   }
 
+  getMatchingPhrases(word: string) {
+    const value = this.searchFor(word);
+    if (value) {
+      if (value.found) {
+        return [value.node.phrase];
+      } else {
+        const nodes = this.allWordsFrom(value.node);
+        console.log({ nodes });
+        if (nodes.length === 1) {
+          return [nodes[0].phrase];
+        } else {
+          return nodes.map((node) => node.phrase);
+        }
+      }
+    }
+    return [];
+  }
+
   private breadthFirstCommandList(node: TrieNode) {
     const nodeList: TrieNode[] = [];
     const queue = [node];

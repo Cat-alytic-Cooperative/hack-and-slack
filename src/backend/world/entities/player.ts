@@ -1,4 +1,3 @@
-import { WORLD } from "../../world";
 import { Client } from "../client";
 import { Character } from "./character";
 import { Room } from "./room";
@@ -50,7 +49,7 @@ export class Player extends Character {
   }
 }
 
-export class PlayerMap extends ThingMap<number, Player> {
+export class PlayerMap extends ThingMap<string, Player> {
   getAllByClient(account: Client) {
     return [...this.values()].filter((player) => player.client === account);
   }

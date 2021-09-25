@@ -2,15 +2,12 @@ import { Trie } from "../shared/util/trie";
 import { CommandArgs, CommandList } from "./state/playing-interpreter";
 import { Character } from "./world/entities/character";
 import { ClientMap } from "./world/client";
-import { DamageType } from "./world/data-types/damage-types";
-import { Dice } from "./world/data-types/dice";
-import { Direction } from "./world/data-types/directions";
 import { Exit } from "./world/entities/exit";
-import { WeaponItemPrototype } from "./world/entities/item";
-import { Mobile, MobilePrototype } from "./world/entities/mobile";
+import { ItemPrototype } from "./world/entities/item";
 import { PlayerMap } from "./world/entities/player";
 import { RaceMap } from "./world/race";
 import { Room } from "./world/entities/room";
+import { Area } from "./world/entities/area";
 
 const timings = {
   ticksPerSecond: 10,
@@ -24,8 +21,10 @@ export interface CommandModule {
 
 export class World {
   players = new PlayerMap();
-  rooms = new Map<number, Room>();
-  exits = new Map<number, Exit>();
+  rooms = new Map<string, Room>();
+  itemPrototypes = new Map<String, ItemPrototype>();
+  exits = new Map<string, Exit>();
+  areas = new Map<string, Area>();
   clients = new ClientMap();
   commands = {
     lookup: new Trie(),
@@ -42,9 +41,12 @@ export class World {
   };
 
   constructor() {
+    
     this.addCommands();
     this.addRaces();
 
+//    loadDatabase(this);
+/*
     const startRoom = new Room();
     startRoom.name = "Starting Room";
     startRoom.description = "This is the starting room.";
@@ -69,7 +71,7 @@ export class World {
     mobilePrototype.name = "guard";
     mobilePrototype.shortDescription = "a guard";
     mobilePrototype.longDescription = "A guard is standing here.";
-    mobilePrototype.description = "The guard is dressed reall nicely.";
+    mobilePrototype.description = "The guard is dressed really nicely.";
 
     const mobile = mobilePrototype.newInstance();
     mobile.moveTo(secondRoom);
@@ -78,11 +80,12 @@ export class World {
     swordPrototype.name = "sword";
     swordPrototype.shortDescription = "a sword";
     swordPrototype.longDescription = "A sword is laying on the ground here";
-    swordPrototype.damageType = DamageType.Slashing;
+    swordPrototype.damageType = "slashing";
     swordPrototype.damage = Dice.from("1d8");
 
     const sword = swordPrototype.newInstance();
     sword.moveTo(startRoom);
+    */
   }
 
   addCommands() {
@@ -157,8 +160,8 @@ export class World {
   }
 
   addRaces() {
-    this.races.set(1, {
-      id: 1,
+    this.races.set("human", {
+      id: "human",
       name: "Human",
       description: "Stuff",
       playable: true,
@@ -183,4 +186,4 @@ export class World {
   wiznet(text: string, actor: Character) {}
 }
 
-export const WORLD = new World();
+//export const WORLD = new World();

@@ -7,6 +7,7 @@ export class Exit {
   shortDescription = "";
   description = "";
   destination?: Room;
+  destinationId = "";
 
   isVisibleTo(ch: Character) {
     return true;

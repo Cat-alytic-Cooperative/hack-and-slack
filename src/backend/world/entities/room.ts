@@ -1,6 +1,5 @@
 import { Character } from "./character";
 import { Contents } from "../content";
-import { Direction } from "../data-types/directions";
 import { Exit } from "./exit";
 import { Item } from "./item";
 import { Player } from "./player";
@@ -9,11 +8,11 @@ import { findCharacter, findItem } from "../util/objects";
 export type RoomContent = Player | Character;
 
 export class Room {
-  id = 0;
+  id = "";
   name = "";
   description = "";
 
-  exits = new Map<Direction, Exit>();
+  exits = new Map<string, Exit>();
   items = new Set<Item>();
   people = new Set<Character>();
 

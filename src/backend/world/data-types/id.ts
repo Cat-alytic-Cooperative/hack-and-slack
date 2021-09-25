@@ -10,5 +10,5 @@ export function nextId(type: Constructor) {
   let id = currentId(type);
   id = id + 1;
   ids.set(type, id);
-  return id;
+  return String(id);
 }

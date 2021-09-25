@@ -1,6 +1,6 @@
 import { Player } from "./entities/player";
 import Queue from "bull";
-import { WORLD } from "../world";
+import { World } from "../world";
 
 export enum ClientState {
   ACTIVE,
@@ -37,9 +37,11 @@ export abstract class Client {
   output = new ClientBuffer();
   lastInput = Date.now();
   snoopyBy?: Client;
+  world: World;
 
-  constructor(clientId: string) {
+  constructor(clientId: string, world: World) {
     this.clientId = clientId;
+    this.world = world;
   }
 
   abstract send(buffer: string | string[] | ClientBuffer): void;
@@ -49,15 +51,15 @@ export abstract class Client {
       this.player.client = undefined;
       this.player = undefined;
     }
-    WORLD.clients.delete(this.clientId);
+    this.world.clients.delete(this.clientId);
   }
 }
 
 export class DiscordClient extends Client {
   queue: Queue.Queue;
 
-  constructor(clientId: string, queue: Queue.Queue) {
-    super(clientId);
+  constructor(clientId: string, world: World, queue: Queue.Queue) {
+    super(clientId, world);
     this.queue = queue;
   }
 

@@ -4,13 +4,17 @@ import { Attack } from "../data-types/attack";
 import { DamageType } from "../data-types/damage-types";
 import { Dice } from "../data-types/dice";
 import { nextId } from "../data-types/id";
+import { Position } from "../data-types";
 
 export class MobilePrototype {
-  id = 0;
+  id = "";
   name = "";
   shortDescription = "";
   longDescription = "";
   description = "";
+
+  startingPosition = Position.Standing;
+  defaultPosition = Position.Standing;
 
   money = new Dice();
 

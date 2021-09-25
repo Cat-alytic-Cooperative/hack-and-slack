@@ -5,7 +5,7 @@ import { Affects } from "../affect";
 import { DamageType } from "../data-types/damage-types";
 import { Money } from "../data-types/money";
 import { Pool } from "../data-types/pool";
-import { Effect, EffectType } from "../data-types/effect";
+import { Effect, EffectList, EffectType } from "../data-types/effect";
 import { Position } from "../data-types/position";
 import { Room } from "./room";
 import { Item } from "./item";
@@ -13,37 +13,30 @@ import { Profession } from "../profession";
 import { Pronoun } from "../util/broadcast";
 import { Player } from "./player";
 import { findItem } from "../util/objects";
+import { EquipmentSlots } from "../data-types/equipment-slot";
+import { BodyParts } from "../data-types";
+import { Attributes } from "../data-types/attributes";
 
 export enum CommunicationFlags {
   NoEmote,
 }
 export abstract class Character {
-  id = 0;
+  id = "";
   name = "";
   shortDescription = "";
   longDescription = "";
   description = "";
   pronoun = Pronoun.Other;
-  prompt = "";
-  prefix = "";
-  master?: Character;
-  leader?: Character;
-  fighting?: Character;
   snoop?: Player;
-  pet?: Character;
-  reply?: Character;
   items = new Set<Item>();
+  equipment = new Map<EquipmentSlots, Item>();
   room?: Room;
   previousRoom?: Room;
   profession: Profession = new Profession();
   level = 1;
+  experience = 0;
   affectedBy = new Set<Affects>();
-  // group
-  // clan
-  // sex
-  // trust
-  wait = 0;
-  daze = 0;
+  effects = new EffectList();
 
   health = new Pool(0);
   mana = new Pool(0);
@@ -51,27 +44,12 @@ export abstract class Character {
 
   money = 0;
 
-  experience = 0;
-  act = new Set<Acts>();
-  comm = new Set();
-  wiznet = new Set();
-  effects: Effect[] = [];
   immunities = new Set<DamageType>();
   resistances = new Set<DamageType>();
   weaknesses = new Set<DamageType>();
-  invis_level = 0;
-  incog_level = 0;
   position = Position.Standing;
-  practice = 0;
-  train = 0;
-  carry_weight = 0;
-  carry_number = 0;
-  saving_throw = 0;
   alignment = 0;
-  hitroll = 0;
-  damroll = 0;
   armor = new Map<DamageType, number>();
-  wimpy = 0;
   abilityScores: AbilityScores = {
     strength: 0,
     dexterity: 0,
@@ -80,16 +58,15 @@ export abstract class Character {
     wisdom: 0,
     charisma: 0,
   };
+
+  modifiers = {
+    abilityScores: {},
+    skills: {},
+    armor: {},
+  }
+
   form = new Set();
-  parts = new Set();
-  size = 0;
-  material = "";
-  // Mobile stuff
-  offensive = new Set();
-  damage: number[] = [];
-  dam_type = 0;
-  start_pos = Position.Standing;
-  default_pos = Position.Standing;
+  parts = new Set<BodyParts>();
 
   addItem(item: Item) {
     this.items.add(item);
@@ -126,13 +103,29 @@ export abstract class Character {
     let value = this.abilityScores[abilityScore] || 0;
 
     // Add any modifiers from Effects
-    value += this.effects
-      .filter((effect) => effect.type === EffectType.AbilityScore && effect.abilityScore === abilityScore)
-      .reduce((prev, curr) => prev + curr.modifier, 0);
+    value += this.effects.getAbilityScore(abilityScore);
 
-    // TODO: Add any modifiers from Equipment
+    // Add any modifiers from Equipment
+    value += Array.from(this.equipment.values())
+      .map((item) => item.effects.getAbilityScore(abilityScore))
+      .reduce((prev, curr) => prev + curr, 0);
 
     return value;
+  }
+
+  getArmor(damageType: DamageType) {
+    let value = this.armor.get(damageType) || 0;
+
+    value += this.effects.getEffectModifier(EffectType.Armor, damageType);
+
+    return value;
+  }
+
+  addEffect(effect: Effect) {
+    switch (effect.type) {
+      case EffectType.AbilityScore:
+        break;
+    }
   }
 
   moveFrom() {

@@ -4,9 +4,11 @@ import { CommandMessage, Message, ResponseMessage } from "../shared/worker/messa
 
 const REDIS_URL = String(process.env.REDIS_URL);
 
+console.log("Loading discord/app.ts");
+
 export function main() {
   console.log("Starting up Discord client.");
-  const client = new Discord.Client();
+  const client = new Discord.Client({ intents: 0 });
 
   const commandQueue = new Queue("command", REDIS_URL);
 
@@ -39,7 +41,7 @@ export function main() {
     console.log("Discord is up and running.");
 
     client.on("message", (message) => {
-      if (message.channel.type != "dm" || message.author.bot) {
+      if (message.channel.type != "DM" || message.author.bot) {
         return;
       }
       console.log("New message:", message);
@@ -56,6 +58,6 @@ export function main() {
       });
     });
   });
-  console.log(`Discord token is ${process.env.DISCORD_TOKEN}`)
+  console.log(`Discord token is ${process.env.DISCORD_TOKEN}`);
   client.login(process.env.DISCORD_TOKEN);
 }

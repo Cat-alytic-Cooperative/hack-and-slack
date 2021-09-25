@@ -1,9 +1,8 @@
 import { Character, Exit, Item, Room } from "../../world/entities";
 import { Position } from "../../world/data-types/position";
 import { CommandList } from "../playing-interpreter";
-import { WORLD } from "../../world";
 
-function personDescription(ch: Character) {
+function characterDescription(ch: Character) {
   console.log(ch);
   if (ch.isNPC) {
     return ch.shortDescription;
@@ -33,7 +32,7 @@ function lookRoom(ch: Character) {
 
   const players = Array.from(ch.room.people)
     .filter((person) => person !== ch)
-    .map(personDescription);
+    .map(characterDescription);
 
   const items = Array.from(ch.room.items, itemDescription);
   if (items.length === 0 && players.length === 0) {
@@ -49,7 +48,7 @@ function lookRoom(ch: Character) {
 }
 
 function lookCharacter(ch: Character, target: Character) {
-  ch.send(`*${target.fullName}*`);
+  ch.send([`*${target.fullName}*`, target.description]);
 }
 
 function lookItem(ch: Character, target: Item) {
@@ -81,8 +80,8 @@ function lookForCharacterOrItem(looker: Character, target: string, place: CanFin
 }
 
 export const Commands: CommandList = {
-  commands({ ch, rest }) {
-    let commands = WORLD.commands.lookup.allWordsFrom().map((entry) => entry.phrase.toLowerCase());
+  commands({ ch, rest, world }) {
+    let commands = world.commands.lookup.allWordsFrom().map((entry) => entry.phrase.toLowerCase());
     if (rest.length) {
       commands = commands.filter((command) => command.startsWith(rest.toLowerCase()));
       commands.unshift(`Commands starting with '${rest}':`);
@@ -123,10 +122,11 @@ export const Commands: CommandList = {
         thing = ch.findItem(ch, rest);
       }
       if (!thing) {
-        return ch.send("You do not see that on you.");
+        return ch.send("You do not see that here or on you.");
       }
       lookThing(ch, thing);
     }
   },
+  score({ ch, command, rest }) {},
 };
 Commands["l"] = Commands.look;

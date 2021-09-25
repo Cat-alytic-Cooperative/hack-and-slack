@@ -1,3 +1,9 @@
+export interface Pools {
+  maxHealth: number;
+  maxMana: number;
+  maxStamina: number;
+}
+
 export class Pool {
   current = 0;
   maximum = 0;

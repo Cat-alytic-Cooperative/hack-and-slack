@@ -87,7 +87,11 @@ export function broadcast(actor: Character, to: BroadcastTarget, text: string, .
           }
           return other === target ? "your" : Possessive.get(target.pronoun) || "";
         case "%":
+          return "%";
+        case "^":
           return other === target ? "" : "s";
+        case "&":
+          return other === target ? "" : "es";
         case "$":
           return "$";
       }

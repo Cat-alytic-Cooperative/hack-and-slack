@@ -113,7 +113,7 @@ export default function initializeCharacterCreation(app: App) {
           submit: PlainText("Create"),
         },
       });
-    } catch (e) {
+    } catch (e: any) {
       console.error(e.data);
     }
   });

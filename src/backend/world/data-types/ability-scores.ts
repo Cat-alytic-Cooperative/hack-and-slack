@@ -8,3 +8,4 @@ export interface AbilityScores {
 }
 
 export type AbilityScore = keyof AbilityScores;
+

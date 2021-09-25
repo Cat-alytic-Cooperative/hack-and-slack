@@ -1,10 +1,12 @@
 import { Character } from "./character";
-import { DamageType } from "../data-types/damage-types";
+import { DamageType, DEFAULT_DAMAGE_TYPE } from "../data-types/damage-types";
 import { Dice } from "../data-types/dice";
 import { nextId } from "../data-types/id";
 import { Room } from "./room";
+import { Effect, EffectList } from "../data-types";
 
-export abstract class ItemPrototype {
+export abstract class BaseItemPrototype {
+  id = "";
   name = "";
   shortDescription = "";
   longDescription = "";
@@ -15,8 +17,8 @@ export abstract class ItemPrototype {
   abstract newInstance(): Item;
 }
 
-export class WeaponItemPrototype extends ItemPrototype {
-  damageType = DamageType.Slashing;
+export class WeaponItemPrototype extends BaseItemPrototype {
+  damageType: DamageType = DEFAULT_DAMAGE_TYPE;
   damage = new Dice();
 
   newInstance(): WeaponItem {
@@ -24,9 +26,11 @@ export class WeaponItemPrototype extends ItemPrototype {
   }
 }
 
+export type ItemPrototype = WeaponItemPrototype;
+
 export class Item {
-  id = 0;
-  prototype: ItemPrototype;
+  id = "";
+  prototype: BaseItemPrototype;
   name = "";
   shortDescription = "";
   longDescription = "";
@@ -36,6 +40,8 @@ export class Item {
 
   room?: Room;
   holder?: Character;
+
+  effects = new EffectList();
 
   moveFrom() {
     if (this.room) {
@@ -58,7 +64,7 @@ export class Item {
     }
   }
 
-  constructor(prototype: ItemPrototype) {
+  constructor(prototype: BaseItemPrototype) {
     this.id = nextId(Item);
     this.prototype = prototype;
 
@@ -75,12 +81,12 @@ export class Item {
   }
 
   get fullName() {
-    return this.shortDescription
+    return this.shortDescription;
   }
 }
 
 export class WeaponItem extends Item {
-  damageType = DamageType.Slashing;
+  damageType: DamageType = DEFAULT_DAMAGE_TYPE;
   damage = new Dice();
 
   constructor(prototype: WeaponItemPrototype) {
@@ -89,4 +95,8 @@ export class WeaponItem extends Item {
     this.damageType = prototype.damageType;
     this.damage = Dice.from(this.damage);
   }
+}
+
+export class ArmorItem extends Item {
+  values = new Map<DamageType, number>();
 }
