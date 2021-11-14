@@ -1,7 +1,7 @@
 import Express from "express";
-import { initializeRouter } from "../web/route-setup";
+import { initializeRouter } from "./route-setup";
 
-export function main() {
+export function startWebService() {
   const app = Express();
 
   initializeRouter(app);

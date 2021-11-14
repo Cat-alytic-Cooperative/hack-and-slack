@@ -1,4 +1,4 @@
-import { Client } from "../client";
+import { MudClient } from "../client";
 import { Character } from "./character";
 import { Room } from "./room";
 import { Thing, ThingMap } from "./thing";
@@ -10,7 +10,7 @@ export enum PlayerState {
 }
 
 export class Player extends Character {
-  client?: Client;
+  client?: MudClient;
   state = PlayerState.PLAYING;
   idle = 0;
   logon = Date.now();
@@ -50,11 +50,11 @@ export class Player extends Character {
 }
 
 export class PlayerMap extends ThingMap<string, Player> {
-  getAllByClient(account: Client) {
+  getAllByClient(account: MudClient) {
     return [...this.values()].filter((player) => player.client === account);
   }
 
-  getByClient(account: Client) {
+  getByClient(account: MudClient) {
     return this.getAllByClient(account)[0];
   }
 }

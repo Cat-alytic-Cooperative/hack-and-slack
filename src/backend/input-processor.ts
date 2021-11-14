@@ -1,37 +1,9 @@
-import Queue, { ProcessCallbackFunction } from "bull";
-import { CommandMessage } from "../shared/worker/messages";
 import { World } from "./world";
-import { Client, ClientState, DiscordClient } from "./world/client";
+import { MudClient, ClientState } from "./world/client";
 import { Player, PlayerState } from "./world/entities";
 
-const REDIS_URL = String(process.env.REDIS_URL);
-
 export function instantiateInputProcessor(world: World) {
-  function startDiscordConnectionManager() {
-    const commandQueue = new Queue("command", REDIS_URL);
-    const discordQueue = new Queue("discord", REDIS_URL);
-
-    const inputProcessor: ProcessCallbackFunction<CommandMessage> = async (job) => {
-      const data = job.data;
-      console.log("backend: job:", job.id, job.data);
-      if (!data.type) {
-        return { type: "error", message: "Invalid request type" };
-      }
-
-      const clientId = data.from;
-      let client = world.clients.get(clientId);
-      if (!client) {
-        client = new DiscordClient(clientId, world, discordQueue);
-        world.clients.set(clientId, client);
-      }
-
-      client.input.add(data.original);
-    };
-
-    commandQueue.process(10, inputProcessor);
-  }
-
-  function processLoginInput(client: Client, input: string) {
+  function processLoginInput(client: MudClient, input: string) {
     const args = input.split(/\s+/);
     const command = args.shift()?.toLowerCase();
     let playerName;
@@ -87,7 +59,7 @@ export function instantiateInputProcessor(world: World) {
     }
   }
 
-  function processCharacterCreationInput(client: Client, input: string) {
+  function processCharacterCreationInput(client: MudClient, input: string) {
     const player = client.player;
     if (!player) {
       return;
@@ -101,7 +73,7 @@ export function instantiateInputProcessor(world: World) {
 
   const CommandRegularExpress = /(\S+)(\s+(.*)\s*)?/;
 
-  function processPlayingInput(client: Client, input: string) {
+  function processPlayingInput(client: MudClient, input: string) {
     if (!client.player) {
       console.error(`Client ${client} has no player, but is somehow playing.`);
       return;
@@ -131,7 +103,7 @@ export function instantiateInputProcessor(world: World) {
     }
   }
 
-  function processInput(client: Client) {
+  function processInput(client: MudClient) {
     const input = client.input.get();
     if (!input) {
       return;
@@ -157,8 +129,6 @@ export function instantiateInputProcessor(world: World) {
       return processPlayingInput(client, input);
     }
   }
-
-  startDiscordConnectionManager();
 
   return processInput;
 }

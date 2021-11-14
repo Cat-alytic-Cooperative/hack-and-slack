@@ -1,5 +1,5 @@
 import { Accounts } from "../../../../shared/database/account";
-import { Client } from "../../../../backend/world/client";
+import { MudClient } from "../../../../backend/world/client";
 import { tryRequestHandler } from "../../../route-setup";
 
 export const get = tryRequestHandler(async (req, res, next) => {

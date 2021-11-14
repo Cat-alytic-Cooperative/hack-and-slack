@@ -1,13 +1,26 @@
-import { World } from "./world";
-import { MudClient, ClientState } from "./world/client";
-import { instantiateInputProcessor } from "./input-processor";
-import { instantiateOutputProcessor } from "./output-processor";
-import { loadDatabase, loadWorld } from "./world/loader/yaml-loader";
+import dotenv from "dotenv";
+dotenv.config();
+
+import { startDiscordClient, startSlackClient } from "./clients";
+
+console.log("single-dyno.ts");
+
+import { World } from "./backend/world";
+import { MudClient, ClientState } from "./backend/world/client";
+import { instantiateInputProcessor } from "./backend/input-processor";
+import { instantiateOutputProcessor } from "./backend/output-processor";
+import { loadDatabase, loadWorld } from "./backend/world/loader/yaml-loader";
+import { startWebClient } from "./clients";
 
 const TICKS_PER_SECOND = 100;
 const MILLISECONDS_PER_TICK = 1000 / TICKS_PER_SECOND;
 
-export function main() {
+async function startGameClients(world: World) {
+  await Promise.all([startDiscordClient(world), startSlackClient(world)]);
+  console.log("Game clients have all started.");
+}
+
+function main() {
   console.log("Loading database");
   loadDatabase();
 
@@ -17,6 +30,9 @@ export function main() {
   console.log("Setting up IO processors.");
   const processInput = instantiateInputProcessor(world);
   const processOutput = instantiateOutputProcessor(world);
+
+  console.log("Starting game clients");
+  startGameClients(world);
 
   function isIdle(client: MudClient) {
     return client.lastInput + 1000 * 60 * 5 < Date.now();
@@ -75,3 +91,5 @@ export function main() {
   console.log("Starting game loop");
   gameLoop(world);
 }
+
+main();

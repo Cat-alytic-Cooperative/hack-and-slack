@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "start:single-dyno": "nodemon --config ./nodemon-single-dyno.json",
+    "start": "nodemon --config ./nodemon-single-dyno.json",
     "start:backend": "nodemon --config ./nodemon-backend.json",
     "start:slack": "nodemon --config ./nodemon-slack.json",
     "heroku:stop": "heroku maintenance:on -a hack-and-slack",
@@ -25,12 +25,14 @@
     "bravey": "^0.1.5",
     "bull": "^3.29.2",
     "bullmq": "^1.48.2",
-    "discord.js": "^13.1.0",
+    "discord.js": "^12.x.x",
     "dotenv": "^10.0.0",
+    "iterall": "^1.3.0",
     "js-yaml": "^4.1.0",
     "nodemon": "^2.0.13",
     "pg": "^8.7.1",
     "ts-node": "^10.2.1",
+    "ts-node-dev": "^1.1.8",
     "typescript": "^4.4.3"
   },
   "devDependencies": {

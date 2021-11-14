@@ -4,7 +4,7 @@ import { Actions } from "./blocks/actions-block";
 
 import { Queue, Worker } from "bullmq";
 
-import { getAccountBySlackId } from "../shared/api/account";
+import { getAccountBySlackId } from "../../shared/api/account";
 
 export default function initializeHomeTab(app: App) {
   console.log("Initializing app home");
